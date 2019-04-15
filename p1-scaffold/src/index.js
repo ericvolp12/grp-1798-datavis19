@@ -17,21 +17,14 @@ function myVis(data) {
   // the important thing is to make sure the aspect ratio is correct.
 
   // portrait
-  const width = 5000;
-  const height = 36 / 24 * width;
+  // const width = 5000;
+  // const height = 36 / 24 * width;
 
   // landscape
   // const height = 5000;
   // const width = 36 / 24 * height;
-  console.log('hi!')
+  // console.log('hi!');
 
   // EXAMPLE FIRST FUNCTION
 
-
-
-
-
-
-
-  console.log("I'm committed after the last one but out of sync!");
 }
