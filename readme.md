@@ -1,3 +1,4 @@
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/ericvolp12/grp-1798-datavis19.svg?style=for-the-badge)
 # Project 1: Static Visualization
 In this project you and a team of other students will band together to build a non-trivial static visualization that will be rendered into the physical world in the form of printed poster. In doing this work we aim to challenge both your design and javascript skills. Once all of the projects are turned in we will have a poster session, it'll be great!
 

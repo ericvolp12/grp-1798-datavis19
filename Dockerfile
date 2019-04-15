@@ -19,4 +19,4 @@ RUN npm install
 COPY /p1-scaffold/. .
 
 EXPOSE 9966
-CMD [ "npm", "run", "start" ]
+CMD [ "npm", "run", "lint" ]
