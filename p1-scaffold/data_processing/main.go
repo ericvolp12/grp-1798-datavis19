@@ -71,7 +71,11 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error fetching track data for track %s, err: %s\n", t.id, err)
 		}
-		fmt.Printf("Track\n\tName: %s\n\tPlaycount: %d\n", tracks[i].name, tracks[i].count)
+		if tracks[i].albumID == spotify.ID("") {
+			fmt.Printf("Track\n\tName: %s\n\tProblem: Track not found!\n", tracks[i].name)
+		} else {
+			fmt.Printf("Track\n\tName: %s\n\tPlaycount: %d\n", tracks[i].name, tracks[i].count)
+		}
 	}
 }
 
@@ -133,19 +137,23 @@ func loadCsvFile(filename string) ([]trackObject, error) {
 }
 
 func fetchTrackData(t trackObject, client spotify.Client) (trackObject, error) {
-	// Get a specific track
-	track, err := client.GetTrack(t.id)
+
+	searchRes, err := client.Search(t.name+" "+t.artists, spotify.SearchTypeTrack)
 	if err != nil {
 		return t, err
 	}
+	if len(searchRes.Tracks.Tracks) == 0 {
+		return t, nil
+	}
+	track := searchRes.Tracks.Tracks[0]
 
 	// handle track results
-	if track != nil {
-		t.albumID = track.Album.ID
-		t.name = track.Name
-		// Fetch playcount data
-		t.count = getCountForAlbumAndTrack(track)
-	}
+	t.albumID = track.Album.ID
+	t.id = track.ID
+	t.name = track.Name
+	// Fetch playcount data
+	t.count = getCountForAlbumAndTrack(&track)
+
 	return t, nil
 }
 
