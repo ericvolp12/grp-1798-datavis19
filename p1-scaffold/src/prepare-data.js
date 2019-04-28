@@ -19,6 +19,14 @@ function getMedians(data) {
   }, {});
 }
 
+// Converts a medians object into an array of medians to iterate over
+function getMediansArray(medians) {
+  return Object.keys(medians).reduce((acc, key) => {
+    acc.push({name: key, value: medians[key]});
+    return acc;
+  }, []);
+}
+
 // Converts our traits from strings to numbers
 function parseNumsFromData(data) {
   return data.reduce((acc, val) => {
@@ -40,6 +48,7 @@ function prepareData(path) {
     let data = rawData.slice(0);
     data = parseNumsFromData(data);
     data.medians = getMedians(data.songs);
+    data.mediansArray = getMediansArray(data.medians);
     return data;
   });
 }
