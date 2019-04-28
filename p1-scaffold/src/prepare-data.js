@@ -1,6 +1,7 @@
 import {csv} from 'd3-fetch';
 
 const traits = ['danceability', 'energy', 'acousticness', 'liveness', 'valence'];
+const metaProps = ['name', 'artists', 'id'];
 
 // Gets an individual median from the data named by trait
 function getMedian(data, trait) {
@@ -21,32 +22,35 @@ function getMedians(data) {
 
 // Converts a medians object into an array of medians to iterate over
 function getMediansArray(medians) {
-  return Object.keys(medians).reduce((acc, key) => {
-    acc.push({name: key, value: medians[key]});
-    return acc;
-  }, []);
+  return Object.keys(medians).map((key) => {
+    return {name: key, value: medians[key]};
+  });
+}
+
+// Builds a clean song object based on traits and metaprops
+function buildCleanSong(rawRow) {
+  const song = traits.reduce((datum, key) => {
+    datum[key] = Number(rawRow[key]);
+    return datum;
+  }, {});
+  return metaProps.reduce((datum, prop) => {
+    datum[prop] = rawRow[prop];
+    return datum;
+  }, song);
 }
 
 // Converts our traits from strings to numbers
-function parseNumsFromData(data) {
-  return data.reduce((acc, val) => {
-    const song = traits.reduce((datum, key) => {
-      datum[key] = Number(val[key]);
-      return datum;
-    }, {});
-    song.name = val.name;
-    song.artists = val.artists;
-    song.id = val.id;
-    acc.songs.push(song);
-    return acc;
-  }, {songs: []});
+function cleanRawRows(data) {
+  return data.map((rawRow) => {
+    return buildCleanSong(rawRow);
+  });
 }
 
 // Gets the data from CSV and prepares it as JSON
 function prepareData(path) {
   return openCsv(path).then(rawData => {
-    let data = rawData.slice(0);
-    data = parseNumsFromData(data);
+    const data = {};
+    data.songs = cleanRawRows(rawData.slice(0));
     data.medians = getMedians(data.songs);
     data.mediansArray = getMediansArray(data.medians);
     return data;
