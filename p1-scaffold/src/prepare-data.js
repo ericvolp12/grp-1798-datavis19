@@ -1,5 +1,7 @@
 import {csv} from 'd3-fetch';
 
+const traits = ['danceability', 'energy', 'acousticness', 'liveness', 'valence'];
+
 // Gets an individual median from the data named by trait
 function getMedian(data, trait) {
   data.sort((a, b) => a[trait] - b[trait]);
@@ -11,16 +13,7 @@ function getMedian(data, trait) {
 
 // Gets the medians from all of our songs
 function getMedians(data) {
-  const medians = {
-    danceability: 0,
-    energy: 0,
-    acousticness: 0,
-    liveness: 0,
-    speechiness: 0,
-    valence: 0,
-    tempo: 0
-  };
-  return Object.keys(medians).reduce((acc, key) => {
+  return traits.reduce((acc, key) => {
     acc[key] = getMedian(data, key);
     return acc;
   }, {});
@@ -29,14 +22,14 @@ function getMedians(data) {
 // Converts our traits from strings to numbers
 function parseNumsFromData(data) {
   return data.reduce((acc, val) => {
-    val.danceability = Number(val.danceability);
-    val.energy = Number(val.energy);
-    val.acousticness = Number(val.acousticness);
-    val.liveness = Number(val.liveness);
-    val.speechiness = Number(val.speechiness);
-    val.valence = Number(val.valence);
-    val.tempo = Number(val.tempo);
-    acc.songs.push(val);
+    const song = traits.reduce((datum, key) => {
+      datum[key] = Number(val[key]);
+      return datum;
+    }, {});
+    song.name = val.name;
+    song.artists = val.artists;
+    song.id = val.id;
+    acc.songs.push(song);
     return acc;
   }, {songs: []});
 }
@@ -47,7 +40,7 @@ function prepareData(path) {
     let data = rawData.slice(0);
     data = parseNumsFromData(data);
     data.medians = getMedians(data.songs);
-    console.log(data);
+    return data;
   });
 }
 

@@ -25,7 +25,7 @@ function myVis() {
 
   // EXAMPLE FIRST FUNCTION
   prepareData('./data/songs.csv').then(data => {
-    console.log('Data prepared!');
+    console.log('Parsed Data: ', data);
   });
 
 }
