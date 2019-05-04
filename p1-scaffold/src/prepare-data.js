@@ -1,4 +1,5 @@
 import {csv} from 'd3-fetch';
+import {generateScales} from './colors';
 
 const traits = ['danceability', 'energy', 'acousticness', 'liveness', 'valence'];
 const metaProps = ['name', 'artists', 'id'];
@@ -16,6 +17,25 @@ function getMedian(data, trait) {
 function getMedians(data) {
   return traits.reduce((acc, key) => {
     acc[key] = getMedian(data, key);
+    return acc;
+  }, {});
+}
+
+// Gets an individual domain from the data named by trait
+function getDomain(data, trait) {
+  return data.reduce((acc, row) => {
+    const value = row[trait];
+    return {
+      min: Math.min(value, acc.min),
+      max: Math.max(value, acc.max)
+    };
+  }, {min: Infinity, max: -Infinity});
+}
+
+// Gets the domains from all of our songs and traits
+function getDomains(data) {
+  return traits.reduce((acc, key) => {
+    acc[key] = getDomain(data, key);
     return acc;
   }, {});
 }
@@ -53,6 +73,8 @@ function prepareData(path) {
     data.songs = cleanRawRows(rawData.slice(0));
     data.medians = getMedians(data.songs);
     data.mediansArray = getMediansArray(data.medians);
+    data.domains = getDomains(data.songs);
+    data.scales = generateScales(data);
     return data;
   });
 }
