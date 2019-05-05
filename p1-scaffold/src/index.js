@@ -24,14 +24,14 @@ function myVis() {
   const w = 1260;
   const h = 2000;
 
-  const width  = w - margin.left - margin.right;
+  const width = w - margin.left - margin.right;
   const height = h - margin.top - margin.bottom;
 
   const svg = select('body').append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
-      .append('g')
-      .attr('transform', `translate(${ margin.left },${ margin.top })`);
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .append('g')
+    .attr('transform', `translate(${ margin.left },${ margin.top })`);
 
   prepareData('./data/songs.csv').then(data => {
     const songs = data.songs;
@@ -47,21 +47,21 @@ function myVis() {
 
     // append the rectangles for the bar chart
     svg.selectAll('.bar')
-          .data(songs)
-          .enter().append('rect')
-          .attr('class', 'bar')
-          .attr('width', x(1))
-          .attr('y', d => songNames(d.name))
-          .attr('height', songNames.bandwidth());
+      .data(songs)
+      .enter().append('rect')
+      .attr('class', 'bar')
+      .attr('width', x(1))
+      .attr('y', d => songNames(d.name))
+      .attr('height', songNames.bandwidth());
 
     // add the x Axis
     svg.append('g')
-          .attr('transform', `translate(0,${ height })`)
-          .call(axisBottom(x));
+      .attr('transform', `translate(0,${ height })`)
+      .call(axisBottom(x));
 
     // add the songNames Axis
     svg.append('g')
-          .call(axisLeft(songNames));
+      .call(axisLeft(songNames));
   });
 
 }
