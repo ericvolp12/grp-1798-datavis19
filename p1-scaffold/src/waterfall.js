@@ -2,12 +2,12 @@ import {scaleLinear, scaleBand} from 'd3-scale';
 import {axisBottom, axisLeft} from 'd3-axis';
 
 /*
-*   Given a song attribute (e.g. liveliness, energy, danceability), draw a histogram
-*   structure to relate song attribute and playcount (i.e. show what effect a certain
-*   song attribute has on its popularity)
-*   INPUT: attribute (String)
-*       data (Object)
-*   OUTPUT: a drawn histogram on the SVG
+*   Given a data object, generates a waterfall of the songs inside.
+*   INPUT: data (Object)
+*     svg (Object)
+*     height (Number)
+*     width (Number)
+*   OUTPUT: Nothing returned but should draw a waterfall on svg
 */
 function drawWaterfall(svg, data, height, width) {
   const songs = data.songs;

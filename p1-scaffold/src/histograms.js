@@ -16,9 +16,12 @@ function drawHistograms(svg, traits, data, height, width) {
 *   Given a song trait (e.g. liveliness, energy, danceability), draw a histogram
 *   structure to relate song trait and playcount (i.e. show what effect a certain
 *   song trait has on its popularity)
-*   INPUT: trait (String)
+*   INPUT: svg (Object)
+*       trait (String)
 *       data (Object)
-*   OUTPUT: a drawn histogram on the SVG
+*       height (Number)
+*       width (Number)
+*   OUTPUT: returns nothing but should draw a histogram on svg
 */
 function drawHistogram(svg, trait, data, height, width) {
   const histSongNames = scaleBand()
