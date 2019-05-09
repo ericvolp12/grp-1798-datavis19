@@ -1,14 +1,21 @@
 import {scaleLinear, scaleBand} from 'd3-scale';
 import {axisBottom, axisLeft} from 'd3-axis';
+import {select} from 'd3-selection';
 
-function drawHistograms(svg, traits, data, height, width) {
+function drawHistograms(traits, data, height, width) {
+  const margin = {
+    top: 15,
+    right: 125,
+    bottom: 115,
+    left: 360
+  };
   traits.forEach(trait => {
-    const newSvg = svg.append('svg')
-      .attr('width', width)
-      .attr('height', height)
-      .append('g')
-      .attr('transform', `translate(${0}, ${0})`);
-    drawHistogram(newSvg, trait, data, height, width);
+    const histSvg = select('body').append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .append('g')
+    .attr('transform', `translate(${ margin.left },${ margin.top})`);
+    drawHistogram(histSvg, trait, data, height, width);
   });
 }
 
@@ -24,8 +31,9 @@ function drawHistograms(svg, traits, data, height, width) {
 *   OUTPUT: returns nothing but should draw a histogram on svg
 */
 function drawHistogram(svg, trait, data, height, width) {
+  const songs = data.songs;
   const histSongNames = scaleBand()
-    .domain(data.songs.map(d => d.name))
+    .domain(songs.map(d => d.name))
     .range([0, height])
     .padding(0.1);
   const histTraitVal = scaleLinear()
@@ -33,11 +41,11 @@ function drawHistogram(svg, trait, data, height, width) {
     .range([0, width]);
 
   svg.selectAll('.histBar')
-    .data(data)
+    .data(songs)
     .enter().append('rect')
     .attr('class', 'histBar')
-    .attr('width', width)
-    .attr('height', height)
+    .attr('width', d => histTraitVal(d[trait]))
+    .attr('height', histSongNames.bandwidth())
     .attr('y', d => histSongNames(d.name));
 
   // draw x-axis (from 0 to trait value)
