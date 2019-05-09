@@ -1,9 +1,6 @@
 import {csv} from 'd3-fetch';
 import {generateScales} from './colors';
 
-const traits = ['danceability', 'energy', 'acousticness', 'liveness', 'valence'];
-const metaProps = ['name', 'artists', 'id'];
-
 // Gets an individual median from the data named by trait
 function getMedian(data, trait) {
   data.sort((a, b) => a[trait] - b[trait]);
@@ -14,7 +11,7 @@ function getMedian(data, trait) {
 }
 
 // Gets the medians from all of our songs
-function getMedians(data) {
+function getMedians(data, traits) {
   return traits.reduce((acc, key) => {
     acc[key] = getMedian(data, key);
     return acc;
@@ -33,7 +30,7 @@ function getDomain(data, trait) {
 }
 
 // Gets the domains from all of our songs and traits
-function getDomains(data) {
+function getDomains(data, traits) {
   return traits.reduce((acc, key) => {
     acc[key] = getDomain(data, key);
     return acc;
@@ -48,7 +45,7 @@ function getMediansArray(medians) {
 }
 
 // Builds a clean song object based on traits and metaprops
-function buildCleanSong(rawRow) {
+function buildCleanSong(rawRow, traits, metaProps) {
   const song = traits.reduce((datum, key) => {
     datum[key] = Number(rawRow[key]);
     return datum;
@@ -60,20 +57,20 @@ function buildCleanSong(rawRow) {
 }
 
 // Converts our traits from strings to numbers
-function cleanRawRows(data) {
+function cleanRawRows(data, traits, metaProps) {
   return data.map((rawRow) => {
-    return buildCleanSong(rawRow);
+    return buildCleanSong(rawRow, traits, metaProps);
   });
 }
 
 // Gets the data from CSV and prepares it as JSON
-function prepareData(path) {
+function prepareData(path, metaProps, traits) {
   return openCsv(path).then(rawData => {
     const data = {};
-    data.songs = cleanRawRows(rawData.slice(0));
-    data.medians = getMedians(data.songs);
+    data.songs = cleanRawRows(rawData.slice(0), traits, metaProps);
+    data.medians = getMedians(data.songs, traits);
     data.mediansArray = getMediansArray(data.medians);
-    data.domains = getDomains(data.songs);
+    data.domains = getDomains(data.songs, traits);
     data.scales = generateScales(data);
     return data;
   });
