@@ -38,6 +38,6 @@ function myVis() {
 
   prepareData('./data/songs.csv', metaProps, traits).then(data => {
     drawWaterfall(svg, data, height, width);
-    drawHistograms(traits, data, height, width);
+    drawHistograms(traits, data, height, width, margin);
   });
 }
