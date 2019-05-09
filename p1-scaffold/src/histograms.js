@@ -2,13 +2,7 @@ import {scaleLinear, scaleBand} from 'd3-scale';
 import {axisBottom, axisLeft} from 'd3-axis';
 import {select} from 'd3-selection';
 
-function drawHistograms(traits, data, height, width) {
-  const margin = {
-    top: 15,
-    right: 125,
-    bottom: 115,
-    left: 360
-  };
+function drawHistograms(traits, data, height, width, margin) {
   traits.forEach(trait => {
     const histSvg = select('body').append('svg')
     .attr('width', width + margin.left + margin.right)
