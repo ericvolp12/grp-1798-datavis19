@@ -29,6 +29,7 @@ function myVis() {
 
   const width = w - margin.left - margin.right;
   const height = h - margin.top - margin.bottom;
+  const histHeight = height / 5;
 
   const svg = select('body').append('svg')
     .attr('width', width + margin.left + margin.right)
@@ -38,6 +39,6 @@ function myVis() {
 
   prepareData('./data/songs.csv', metaProps, traits).then(data => {
     drawWaterfall(svg, data, height, width);
-    drawHistograms(traits, data, height, width, margin);
+    drawHistograms(traits, data, histHeight, width, margin);
   });
 }
