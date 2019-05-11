@@ -14,6 +14,31 @@ function drawHistograms(traits, data, height, width, margin) {
 }
 
 /*
+*   Given a list of songs and a trait, return an Object that contains
+*   sorted frequencies of songs whose value for the given trait. Songs are sorted
+*   by 0.1 intervals of the value for the given trait.
+*   INPUT: data (Object)
+*       trait (String)
+*   OUTPUT: returns an Object containing the sorted frequencies of the songs
+*/
+function countTrait(data, trait) {
+  const songs = data.songs;
+  const counts = {};
+  songs.forEach(function sort(d) {
+    const val = Math.floor(d[trait] * 10) / 10;
+    if (val in counts) {
+      counts[val] += 1;
+    } else {
+      counts[val] = 1;
+    }
+  });
+  // convert counts{} to countArr[]
+  const countArr = Object.keys(counts).map(function f(key) {
+    return {[key]: counts[key]};
+  });
+  return countArr;
+}
+/*
 *   Given a song trait (e.g. liveliness, energy, danceability), draw a histogram
 *   structure to relate song trait and playcount (i.e. show what effect a certain
 *   song trait has on its popularity)
@@ -25,22 +50,15 @@ function drawHistograms(traits, data, height, width, margin) {
 *   OUTPUT: returns nothing but should draw a histogram on svg
 */
 function drawHistogram(svg, trait, data, height, width) {
-  const songs = data.songs;
+  const counts = countTrait(data, trait);
+  const freqs = counts.map(d => Object.values(d)[0]);
   const histSongNames = scaleBand()
-    .domain(songs.map(d => d.name))
-    .range([0, height])
+    .domain(Array(10).fill().map((a, i) => Math.round((i * 0.1) * 10) / 10))
+    .rangeRound([0, height])
     .padding(0.1);
   const histTraitVal = scaleLinear()
-    .domain([data.domains[trait].min, data.domains[trait].max])
+    .domain([Math.min(...freqs), Math.max(...freqs)])
     .range([0, width]);
-
-  svg.selectAll('.histBar')
-    .data(songs)
-    .enter().append('rect')
-    .attr('class', 'histBar')
-    .attr('width', d => histTraitVal(d[trait]))
-    .attr('height', histSongNames.bandwidth())
-    .attr('y', d => histSongNames(d.name));
 
   // draw x-axis (from 0 to trait value)
   svg.append('g')
@@ -51,6 +69,14 @@ function drawHistogram(svg, trait, data, height, width) {
   svg.append('g')
     .attr('transform', `translate(${0}, ${0})`)
     .call(axisLeft(histSongNames));
+
+  svg.selectAll('.histBar')
+  .data(counts)
+  .enter().append('rect')
+  .attr('class', 'histBar')
+  .attr('width', d => histTraitVal(Object.values(d)[0]))
+  .attr('height', histSongNames.bandwidth())
+  .attr('y', d => histSongNames(Object.keys(d)[0]));
 }
 
 module.exports = {

@@ -29,6 +29,7 @@ function myVis() {
 
   const width = w - margin.left - margin.right;
   const height = h - margin.top - margin.bottom;
+  const histHeight = height / 5;
 
   const svg = select('body').append('svg')
     .attr('width', width + margin.left + margin.right)
