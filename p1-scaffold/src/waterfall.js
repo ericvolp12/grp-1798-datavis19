@@ -31,7 +31,7 @@ function drawWaterfall(svg, data, height, width, traits) {
     .data(songs)
     .enter().append('g')
     .attr('class', 'waterfallBar')
-    .attr('width', x(1))
+    .attr('width', width)
     .attr('y', d => songNames(d.name))
     .attr('height', songNames.bandwidth())
     .selectAll('.colorBar')
@@ -53,14 +53,19 @@ function drawWaterfall(svg, data, height, width, traits) {
       });
     });
 
-  // add the x Axis
-  svg.append('g')
-    .attr('transform', `translate(0,${ height })`)
-    .call(axisBottom(x));
-
   // add the songNames Axis
   svg.append('g')
     .call(axisLeft(songNames));
+
+  const traitsOrdered = traits.reverse().map(word => word.toUpperCase());
+  const xAxis = scaleBand()
+      .domain(traitsOrdered)
+      .range([0, width]);
+
+  // add the x Axis
+  svg.append('g')
+      .attr('transform', `translate(0,${ height })`)
+      .call(axisBottom(xAxis));
 }
 
 module.exports = {
