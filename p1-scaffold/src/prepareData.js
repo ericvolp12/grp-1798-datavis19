@@ -63,13 +63,6 @@ function cleanRawRows(data, traits, metaProps) {
   });
 }
 
-// Converts our traits from strings to numbers
-function addPop(data, traits, metaProps) {
-    return data.map((rawRow,i) => {
-        const song = buildCleanSong(rawRow, traits, metaProps);
-        song['popularity'] = i;
-    });
-}
 
 // Gets the data from CSV and prepares it as JSON
 function prepareData(path, metaProps, traits) {
