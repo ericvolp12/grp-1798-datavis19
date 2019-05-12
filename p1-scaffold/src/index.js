@@ -38,7 +38,7 @@ function myVis() {
     .attr('transform', `translate(${ margin.left },${ margin.top })`);
 
   prepareData('./data/songs.csv', metaProps, traits).then(data => {
-    drawWaterfall(svg, data, height, width);
+    drawWaterfall(svg, data, height, width, traits);
     drawHistograms(traits, data, histHeight, width, margin);
   });
 }
