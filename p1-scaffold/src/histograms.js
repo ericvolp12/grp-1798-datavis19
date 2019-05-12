@@ -1,4 +1,4 @@
-import {scaleLinear} from 'd3-scale';
+import {scaleLinear, scaleBand} from 'd3-scale';
 import {axisBottom, axisLeft} from 'd3-axis';
 import {histogram, min, max} from 'd3-array';
 import {select} from 'd3-selection';
@@ -12,6 +12,12 @@ function drawHistograms(traits, data, height, width, margin) {
     .attr('transform', `translate(${ margin.left },${ margin.top})`);
     drawHistogram(histSvg, trait, data, height, width);
   });
+  const medianSvg = select('body').append('svg')
+  .attr('width', width + margin.left + margin.right)
+  .attr('height', height + margin.top + margin.bottom)
+  .append('g')
+  .attr('transform', `translate(${ margin.left },${ margin.top})`);
+  drawMedians(medianSvg, data, height, width);
 }
 
 /*
@@ -59,6 +65,48 @@ function drawHistogram(svg, trait, data, height, width) {
   .attr('width', d => histXScale(d.length))
   .attr('height', d => histYScale(d.x1) - histYScale(d.x0))
   .attr('y', d => histYScale(d.x0));
+}
+
+/*
+* Given song data, create a bar chart showing the median value of each
+* trait in the data set.
+* INPUT:
+*   medianSvg (Object)
+*   data (Object)
+*   height (Number)
+*   width (Number)
+* OUTPUT:
+*   returns nothing, but draws a bar chart
+*/
+function drawMedians(medianSvg, data, height, width) {
+  const medians = data.medians;
+  const medianXScale = scaleLinear()
+  .domain([min(Object.values(medians)) - 0.05, max(Object.values(medians))])
+  .range([0, width]);
+  const medianYScale = scaleBand()
+  .domain(Object.keys(medians))
+  .range([0, height]);
+  // draw x-axis
+  medianSvg.append('g')
+  .attr('transform', `translate(0, ${height})`)
+  .call(axisBottom(medianXScale));
+  // draw y-axis
+  medianSvg.append('g')
+    .attr('transform', `translate(${0}, ${0})`)
+    .call(axisLeft(medianYScale));
+  // format medians{} as medianArr[] for d3.data
+  const medianArr = Object.keys(medians).map(function fieldToObject(d) {
+    return {[d]: medians[d]};
+  });
+  // draw bars
+  console.log(medianArr);
+  medianSvg.selectAll('.medianBar')
+  .data(medianArr)
+  .enter().append('rect')
+  .attr('class', 'medianBar')
+  .attr('width', d => medianXScale(Object.values(d)[0]))
+  .attr('height', medianYScale.bandwidth())
+  .attr('y', d => medianYScale(Object.keys(d)[0]));
 }
 
 module.exports = {
