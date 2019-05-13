@@ -64,7 +64,8 @@ function drawHistogram(svg, trait, data, height, width) {
   .attr('class', 'histBar')
   .attr('width', d => histXScale(d.length))
   .attr('height', d => histYScale(d.x1) - histYScale(d.x0))
-  .attr('y', d => histYScale(d.x0));
+  .attr('y', d => histYScale(d.x0))
+  .attr('fill', data.scales[trait](data.medians[trait]));
 }
 
 /*
@@ -99,16 +100,23 @@ function drawMedians(medianSvg, data, height, width) {
     return {[d]: medians[d]};
   });
   // draw bars
-  console.log(medianArr);
   medianSvg.selectAll('.medianBar')
   .data(medianArr)
   .enter().append('rect')
   .attr('class', 'medianBar')
-  .attr('width', d => medianXScale(Object.values(d)[0]))
+  .attr('width', d => medianXScale(getValue(d)))
   .attr('height', medianYScale.bandwidth())
-  .attr('y', d => medianYScale(Object.keys(d)[0]));
+  .attr('y', d => medianYScale(getKey(d)))
+  .attr('fill', d => data.scales[getKey(d)](data.medians[getKey(d)]));
 }
 
+function getKey(d) {
+  return Object.keys(d)[0];
+}
+
+function getValue(d) {
+  return Object.values(d)[0];
+}
 module.exports = {
   drawHistograms
 };
