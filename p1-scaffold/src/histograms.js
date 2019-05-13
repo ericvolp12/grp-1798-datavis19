@@ -40,7 +40,7 @@ function drawHistogram(svg, trait, data, height, width) {
   // create x-y scales & frequency bins
   const histYScale = scaleLinear()
     .domain([min(traitValues), max(traitValues)])
-    .range([0, height]);
+    .range([height, 0]);
   const histData = histogram()
     .domain(histYScale.domain())
     .thresholds(histYScale.ticks(5))(traitValues);
@@ -63,8 +63,8 @@ function drawHistogram(svg, trait, data, height, width) {
     .enter().append('rect')
     .attr('class', 'histBar')
     .attr('width', d => histXScale(d.length))
-    .attr('height', d => histYScale(d.x1) - histYScale(d.x0))
-    .attr('y', d => histYScale(d.x0))
+    .attr('height', d => histYScale(d.x0) - histYScale(d.x1))
+    .attr('y', d => histYScale(d.x1))
     .attr('fill', d => data.scales[trait](((d.x1 - d.x0) / 2) + d.x0));
 }
 
