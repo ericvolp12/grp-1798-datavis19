@@ -37,9 +37,6 @@ function myVis() {
     .attr('transform', `translate(${ margin.left },${ margin.top })`);
 
   prepareData('./data/songs.csv', metaProps, traits).then(data => {
-    // Remove me before submissions
-    console.log(data);
-
     drawWaterfall(svg, data, height, width, traits);
     drawHistograms(svg, traits, data, height, width);
   });

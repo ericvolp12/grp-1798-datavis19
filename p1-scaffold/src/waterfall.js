@@ -59,13 +59,13 @@ function drawWaterfall(svg, data, height, width, traits) {
 
   const traitsOrdered = traits.reverse().map(word => word.toUpperCase());
   const xAxis = scaleBand()
-      .domain(traitsOrdered)
-      .range([0, width]);
+    .domain(traitsOrdered)
+    .range([0, width]);
 
   // add the x Axis
   svg.append('g')
-      .attr('transform', `translate(0,${ height })`)
-      .call(axisBottom(xAxis));
+    .attr('transform', `translate(0,${ height })`)
+    .call(axisBottom(xAxis));
 }
 
 module.exports = {
