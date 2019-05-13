@@ -63,7 +63,6 @@ function cleanRawRows(data, traits, metaProps) {
   });
 }
 
-
 // Gets the data from CSV and prepares it as JSON
 function prepareData(path, metaProps, traits) {
   return openCsv(path).then(rawData => {

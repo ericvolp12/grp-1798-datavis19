@@ -19,4 +19,4 @@ RUN npm install
 COPY . .
 
 EXPOSE 9966
-CMD [ "npm", "run", "test" ]
+CMD [ "npm", "run", "lint" ]
