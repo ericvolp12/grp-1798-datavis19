@@ -6,17 +6,17 @@ import {select} from 'd3-selection';
 function drawHistograms(traits, data, height, width, margin) {
   traits.forEach(trait => {
     const histSvg = select('body').append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', `translate(${ margin.left },${ margin.top})`);
+    drawHistogram(histSvg, trait, data, height, width);
+  });
+  const medianSvg = select('body').append('svg')
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom)
     .append('g')
     .attr('transform', `translate(${ margin.left },${ margin.top})`);
-    drawHistogram(histSvg, trait, data, height, width);
-  });
-  const medianSvg = select('body').append('svg')
-  .attr('width', width + margin.left + margin.right)
-  .attr('height', height + margin.top + margin.bottom)
-  .append('g')
-  .attr('transform', `translate(${ margin.left },${ margin.top})`);
   drawMedians(medianSvg, data, height, width);
 }
 
@@ -39,16 +39,16 @@ function drawHistogram(svg, trait, data, height, width) {
   });
   // create x-y scales & frequency bins
   const histYScale = scaleLinear()
-  .domain([min(traitValues), max(traitValues)])
-  .range([0, height]);
+    .domain([min(traitValues), max(traitValues)])
+    .range([height, 0]);
   const histData = histogram()
-  .domain(histYScale.domain())
-  .thresholds(histYScale.ticks(5))(traitValues);
+    .domain(histYScale.domain())
+    .thresholds(histYScale.ticks(5))(traitValues);
   const histXScale = scaleLinear()
-  .domain([0, max(histData, function getLength(d) {
-    return d.length;
-  })])
-  .range([0, width]);
+    .domain([0, max(histData, function getLength(d) {
+      return d.length;
+    })])
+    .range([0, width]);
   // draw x-axis (from 0 to trait value)
   svg.append('g')
     .attr('transform', `translate(0, ${height})`)
@@ -59,12 +59,13 @@ function drawHistogram(svg, trait, data, height, width) {
     .call(axisLeft(histYScale));
   // draw bars
   svg.selectAll('.histBar')
-  .data(histData)
-  .enter().append('rect')
-  .attr('class', 'histBar')
-  .attr('width', d => histXScale(d.length))
-  .attr('height', d => histYScale(d.x1) - histYScale(d.x0))
-  .attr('y', d => histYScale(d.x0));
+    .data(histData)
+    .enter().append('rect')
+    .attr('class', 'histBar')
+    .attr('width', d => histXScale(d.length))
+    .attr('height', d => histYScale(d.x0) - histYScale(d.x1))
+    .attr('y', d => histYScale(d.x1))
+    .attr('fill', d => data.scales[trait](((d.x1 - d.x0) / 2) + d.x0));
 }
 
 /*
@@ -81,15 +82,15 @@ function drawHistogram(svg, trait, data, height, width) {
 function drawMedians(medianSvg, data, height, width) {
   const medians = data.medians;
   const medianXScale = scaleLinear()
-  .domain([min(Object.values(medians)) - 0.05, max(Object.values(medians))])
-  .range([0, width]);
+    .domain([min(Object.values(medians)) - 0.05, max(Object.values(medians))])
+    .range([0, width]);
   const medianYScale = scaleBand()
-  .domain(Object.keys(medians))
-  .range([0, height]);
+    .domain(Object.keys(medians))
+    .range([0, height]);
   // draw x-axis
   medianSvg.append('g')
-  .attr('transform', `translate(0, ${height})`)
-  .call(axisBottom(medianXScale));
+    .attr('transform', `translate(0, ${height})`)
+    .call(axisBottom(medianXScale));
   // draw y-axis
   medianSvg.append('g')
     .attr('transform', `translate(${0}, ${0})`)
@@ -99,16 +100,23 @@ function drawMedians(medianSvg, data, height, width) {
     return {[d]: medians[d]};
   });
   // draw bars
-  console.log(medianArr);
   medianSvg.selectAll('.medianBar')
-  .data(medianArr)
-  .enter().append('rect')
-  .attr('class', 'medianBar')
-  .attr('width', d => medianXScale(Object.values(d)[0]))
-  .attr('height', medianYScale.bandwidth())
-  .attr('y', d => medianYScale(Object.keys(d)[0]));
+    .data(medianArr)
+    .enter().append('rect')
+    .attr('class', 'medianBar')
+    .attr('width', d => medianXScale(getValue(d)))
+    .attr('height', medianYScale.bandwidth())
+    .attr('y', d => medianYScale(getKey(d)))
+    .attr('fill', d => data.scales[getKey(d)](data.medians[getKey(d)]));
 }
 
+function getKey(d) {
+  return Object.keys(d)[0];
+}
+
+function getValue(d) {
+  return Object.values(d)[0];
+}
 module.exports = {
   drawHistograms
 };
