@@ -63,15 +63,17 @@ function cleanRawRows(data, traits, metaProps) {
   });
 }
 
+
 // Gets the data from CSV and prepares it as JSON
 function prepareData(path, metaProps, traits) {
   return openCsv(path).then(rawData => {
     const data = {};
-    data.songs = cleanRawRows(rawData.slice(0), traits, metaProps);
-    data.medians = getMedians(data.songs, traits);
+    const s = cleanRawRows(rawData.slice(0), traits, metaProps);
+    data.medians = getMedians(s, traits);
     data.mediansArray = getMediansArray(data.medians);
-    data.domains = getDomains(data.songs, traits);
+    data.domains = getDomains(s, traits);
     data.scales = generateScales(data);
+    data.songs = cleanRawRows(rawData.slice(0), traits, metaProps);
     return data;
   });
 }
